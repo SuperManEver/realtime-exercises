@@ -14,6 +14,12 @@ msg.push({
   time: Date.now(),
 });
 
+msg.push({
+  user: "nik",
+  text: "wassaby",
+  time: Date.now(),
+});
+
 // get express ready to run
 const app = express();
 app.use(morgan("dev"));
@@ -21,13 +27,23 @@ app.use(bodyParser.json());
 app.use(express.static("frontend"));
 
 app.get("/poll", function (req, res) {
-  // use getMsgs to get messages to send back
-  // write code here
+  res.json({
+    msg: getMsgs(),
+  });
 });
 
 app.post("/poll", function (req, res) {
-  // add a new message to the server
-  // write code here
+  const { user, text } = req.body;
+
+  msg.push({
+    user,
+    text,
+    time: Date.now(),
+  });
+
+  res.send({
+    status: 200,
+  });
 });
 
 // start the server
