@@ -35,17 +35,20 @@ async function postNewMsg(user, text) {
 }
 
 async function getNewMsgs() {
-  // poll the server
-  // write code here
+  try {
+    const res = await fetch("http://localhost:3000/poll");
 
-  const res = await fetch("http://localhost:3000/poll");
+    const data = await res.json();
 
-  const data = await res.json();
+    if (data.msg) {
+      allChat = data.msg;
 
-  if (data.msg) {
-    allChat = data.msg;
+      render();
 
-    render();
+      setTimeout(getNewMsgs, INTERVAL);
+    }
+  } catch (e) {
+    console.error("polling error", e);
   }
 }
 
