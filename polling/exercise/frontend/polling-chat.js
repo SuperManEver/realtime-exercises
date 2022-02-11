@@ -26,15 +26,11 @@ async function postNewMsg(user, text) {
       text,
     }),
   });
-
-  const data = await res.json();
-
-  if (data.status && data.status === 200) {
-    getNewMsgs();
-  }
 }
 
 async function getNewMsgs() {
+  console.log("getNewMsgs");
+
   try {
     const res = await fetch("http://localhost:3000/poll");
 
@@ -44,8 +40,6 @@ async function getNewMsgs() {
       allChat = data.msg;
 
       render();
-
-      setTimeout(getNewMsgs, INTERVAL);
     }
   } catch (e) {
     console.error("polling error", e);
@@ -66,5 +60,15 @@ function template(user, msg) {
   return `<li class="collection-item"><span class="badge">${user}</span>${msg}</li>`;
 }
 
-// make the first request
-getNewMsgs();
+let timeToMakeNextRequest = 0;
+
+async function rafTimer(time) {
+  if (timeToMakeNextRequest <= time) {
+    await getNewMsgs();
+    timeToMakeNextRequest = time + INTERVAL;
+  }
+
+  requestAnimationFrame(rafTimer);
+}
+
+requestAnimationFrame(rafTimer);
