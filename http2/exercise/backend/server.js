@@ -16,6 +16,12 @@ msg.push({
   time: Date.now(),
 });
 
+msg.push({
+  user: "Todd",
+  text: "awesome",
+  time: Date.now(),
+});
+
 // the two commands you'll have to run in the root directory of the project are
 // (not inside the backend folder)
 //

@@ -32,11 +32,73 @@ async function postNewMsg(user, text) {
 }
 
 async function getNewMsgs() {
-  /*
-   *
-   * code goes here
-   *
+  let reader;
+
+  /**
+   * looks like just a decoder, transformer
    */
+  const utfDecoder = new TextDecoder("utf-8");
+
+  try {
+    /**
+     * create a stream to receive data from backend
+     */
+    const res = await fetch("/msgs");
+
+    /**
+     * use response body as a stream and a buffer of data
+     */
+    reader = res.body.getReader();
+  } catch (e) {
+    console.log("Connection error");
+  }
+
+  /**
+   * if OK we change conenction status to OK
+   */
+  presence.innerText = "connected";
+
+  let readerResponse;
+  let done;
+
+  do {
+    try {
+      /**
+       * an atttemp to read data from stream
+       */
+
+      readerResponse = await reader.read();
+    } catch (e) {
+      console.log("reader fail: ", e);
+      presence.innerText = "not connected";
+
+      return;
+    }
+
+    /**
+     * decode to string in UTF-8
+     */
+    const chunk = utfDecoder.decode(readerResponse.value, { stream: true });
+    done = readerResponse.done;
+
+    /**
+     * it frame is not empty
+     */
+    if (chunk) {
+      /**
+       * attemp to parse it
+       */
+      try {
+        const json = JSON.parse(chunk);
+
+        allChat = json.msg;
+
+        render();
+      } catch (e) {
+        console.log("parse error", e);
+      }
+    }
+  } while (!done);
 }
 
 function render() {
