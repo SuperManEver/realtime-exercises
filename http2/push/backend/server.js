@@ -62,9 +62,13 @@ server.on("request", async (req, res) => {
   } else if (method === "POST") {
     // get data out of post
     const buffers = [];
+
     for await (const chunk of req) {
+      console.log(chunk);
+
       buffers.push(chunk);
     }
+
     const data = Buffer.concat(buffers).toString();
     const { user, text } = JSON.parse(data);
     msg.push({
